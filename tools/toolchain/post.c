@@ -29,11 +29,14 @@ void rcr(char *s)
 		s[n-1] = 0;
 }
 
-main()
+int main(int argc, char *argv[])
 {
 	FILE *in, *out;
 	char line[256];
+	int llen;
 	char *p;
+	char *lp;
+	char *next;
 
 	in = stdin;
 	out = stdout;
@@ -53,14 +56,40 @@ main()
 		p = strstr(line, "..");
 		if(p)
 			*p = 0;
+		p = strstr(line, "//");
+		if(p)
+			*p = 0;
 
-		if(strlen(line) < 1)
+		llen = strlen(line);
+		if(llen < 1)
 			continue;
 
-		fprintf(out, "%s\n", line);
+		next = line;
+
+		while(next < line + llen)
+		{
+			lp = next;
+
+			// split lines
+			p = strstr(next, "__NL__");
+			if(p)
+			{
+				next = p + 6;
+				*p = 0;
+			}
+			else
+			{
+				next = line + llen;
+			}
+
+			if(strlen(lp) < 1)
+				continue;
+
+			fprintf(out, "%s\n", lp);
+		}
 	}
 
-	fprintf(out, "\n    .end\n");
+	fprintf(out, "\n    end\n");
 	fclose(in);
 	fclose(out);
 }
